@@ -6,7 +6,7 @@ import numpy as np
 # Cargar el modelo
 @st.cache_resource
 def load_model():
-    model_path = "modelo_coches_rf.joblib"  
+    model_path = "modelo_correcto.joblib"  
     return joblib.load(model_path)
 
 model = load_model()
