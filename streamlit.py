@@ -5,14 +5,14 @@ import numpy as np
 
 # Cargar el modelo
 @st.cache_resource
-def load_model():
-    model_path = "modelo_correcto.joblib"  
-    return joblib.load(model_path)
+def load_pipeline():
+    pipeline_path = "modelo_correcto.joblib"  # Path to your saved pipeline
+    return joblib.load(pipeline_path)
 
-model = load_model()
+pipeline = load_pipeline()
 
 # Cargar datos
-df_cars = pd.read_csv("modelos_coches.csv")
+df_cars = pd.read_csv("df_modelo_limpio.csv")
 
 # Sidebar para características del coche
 st.sidebar.header("Características del coche")
@@ -42,14 +42,41 @@ input_data = pd.DataFrame({
     'version': [version if version else None]
 })
 
-# Aplicar transformaciones necesarias
-input_data['log_kms'] = np.log(input_data['kms'] + 1)
-input_data['km_per_year'] = input_data['kms'] / input_data['vehicle_age'] if input_data['vehicle_age'][0] > 0 else input_data['kms']
-input_data['power_per_age'] = input_data['power'] / input_data['vehicle_age'] if input_data['vehicle_age'][0] > 0 else input_data['power']
+# Add the same engineered features you used during training
+input_data['power_to_age'] = input_data['power'] / (input_data['vehicle_age'] + 1)  # +1 to avoid division by zero
+input_data['kms_per_year'] = input_data['kms'] / (input_data['vehicle_age'] + 1)
+
+# Add log transformations if your preprocessor expects them
+input_data['log_kms'] = np.log1p(input_data['kms'])
+input_data['log_power'] = np.log1p(input_data['power'])
+input_data['log_vehicle_age'] = np.log1p(input_data['vehicle_age'])
+
+# Add the missing columns with default values
+# Popularity metrics (can set to average values or 0)
+input_data['model_popularity'] = 0
+input_data['make_popularity'] = 0
+
+# Additional calculated fields
+input_data['price_per_power'] = 0  # Will be ignored by the model since we don't have price yet
+input_data['power_per_kms'] = input_data['power'] / (input_data['kms'] + 1)
+input_data['price_per_year'] = 0  # Will be ignored 
+input_data['price_range'] = 'medium'  # Default category
+
+# Dealer information (using placeholders)
+input_data['dealer_zip_code'] = '00000'
+input_data['dealer_city'] = 'unknown'
+input_data['province'] = 'unknown'
+input_data['dealer_info'] = 'unknown'
+input_data['dealer_name'] = 'unknown'
+input_data['dealer_address'] = 'unknown'
+
+# Other features
+input_data['big_city_dealer'] = 0  # Boolean feature, 0 for false
+input_data['normalized_version'] = input_data['version']  # Use the same value or normalize it if needed
 
 # Predicción de precio
 if st.button("Predecir Precio"):
-    predicted_price = model.predict(input_data)[0]
+    predicted_price = pipeline.predict(input_data)[0]
     st.write(f"### Precio estimado: {predicted_price:,.2f} €")
     
     # Filtrar coches dentro de un margen de ±5% del precio predicho (cambiado de 10% a 5%)
