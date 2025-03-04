@@ -14,6 +14,22 @@ def load_price_model():
     price_model_path = "random_forest_pipeline_compressed.joblib"  
     return joblib.load(price_model_path)
 
+import streamlit as st
+import pandas as pd
+import joblib  
+import numpy as np 
+
+# Cargar modelos
+@st.cache_resource
+def load_pipeline():
+    pipeline_path = "modelo_correcto.joblib"
+    return joblib.load(pipeline_path)
+
+@st.cache_resource
+def load_price_model():
+    price_model_path = "modelo_precio.joblib"  
+    return joblib.load(price_model_path)
+
 # Cargar datos
 df_cars = pd.read_csv("df_modelo_limpio.csv")
 
@@ -21,27 +37,31 @@ df_cars = pd.read_csv("df_modelo_limpio.csv")
 st.set_page_config(layout="wide")
 st.title("🚗 Recomendador de Coches")
 
-# Crear columnas
-col1, col2 = st.columns(2)
+# Selector de modelo en el sidebar
+st.sidebar.header("Selector de Modelo")
+modelo_seleccionado = st.sidebar.radio(
+    "Elige el modelo de recomendación", 
+    ["Recomendador de Coches", "Predicción de Precio"]
+)
 
 # Columna de Características
-with col1:
-    st.header("Recomendador por Características") 
+if modelo_seleccionado == "Recomendador de Coches":
+    st.header("Recomendador de Coches") 
 
     # Sidebar para características del coche
-    st.sidebar.header("Características del coche")
+    st.sidebar.header("Características del Coche")
 
     year = st.sidebar.slider("Año del coche", 2000, 2024, 2015, key="characteristics_year")
-    kms = st.sidebar.number_input("Kilómetros recorridos", min_value=0, max_value=500000, value=50000, step=1000)
-    power = st.sidebar.number_input("Potencia (CV)", min_value=50, max_value=600, value=150, step=10)
+    kms = st.sidebar.number_input("Kilómetros recorridos", min_value=0, max_value=500000, value=50000, step=1000, key="characteristics_kms")
+    power = st.sidebar.number_input("Potencia (CV)", min_value=50, max_value=600, value=150, step=10, key="characteristics_power")
     vehicle_age = 2024 - year
 
-    fuel = st.sidebar.selectbox("Tipo de combustible", ["Gasolina", "Diésel", "Eléctrico", "Híbrido"], index=0)
-    shift = st.sidebar.selectbox("Tipo de cambio", ["Manual", "Automático"], index=0)
+    fuel = st.sidebar.selectbox("Tipo de combustible", ["Gasolina", "Diésel", "Eléctrico", "Híbrido"], index=0, key="characteristics_fuel")
+    shift = st.sidebar.selectbox("Tipo de cambio", ["Manual", "Automático"], index=0, key="characteristics_shift")
 
-    make = st.sidebar.text_input("Marca")
-    model_input = st.sidebar.text_input("Modelo")
-    version = st.sidebar.text_input("Versión")
+    make = st.sidebar.text_input("Marca", key="characteristics_make")
+    model_input = st.sidebar.text_input("Modelo", key="characteristics_model")
+    version = st.sidebar.text_input("Versión", key="characteristics_version")
 
     # Crear dataframe con los valores introducidos
     input_data = pd.DataFrame({
@@ -199,17 +219,20 @@ with col1:
                 st.write("---")
         else:
             st.write("No se encontraron recomendaciones que coincidan con los criterios.")
-            
+
 # Columna de Precio
-with col2:
+else:
     st.header("Predicción de Precio")
+    
+    # Sidebar para predicción de precio
+    st.sidebar.header("Características para Predicción")
     
     # Inputs para predicción de precio
     price_year = st.slider("Año del coche", 2000, 2024, 2015, key="price_prediction_year")
-    price_kms = st.number_input("Kilómetros", min_value=0, max_value=500000, value=50000)
-    price_power = st.number_input("Potencia (CV)", min_value=50, max_value=600, value=150)
-    price_fuel = st.selectbox("Tipo de combustible", ["Gasolina", "Diésel", "Eléctrico", "Híbrido"])
-    price_shift = st.selectbox("Tipo de cambio", ["Manual", "Automático"])
+    price_kms = st.number_input("Kilómetros", min_value=0, max_value=500000, value=50000, key="price_prediction_kms")
+    price_power = st.number_input("Potencia (CV)", min_value=50, max_value=600, value=150, key="price_prediction_power")
+    price_fuel = st.selectbox("Tipo de combustible", ["Gasolina", "Diésel", "Eléctrico", "Híbrido"], key="price_prediction_fuel")
+    price_shift = st.selectbox("Tipo de cambio", ["Manual", "Automático"], key="price_prediction_shift")
 
     # Preparar datos para modelo de precio
     price_input_data = pd.DataFrame({
