@@ -11,12 +11,12 @@ def load_pipeline():
 
 pipeline = load_pipeline()
 
-@st.cache_resource
-def load_price_model():
-    price_model_path = "modelo_precio.joblib"  
-    return joblib.load(price_model_path)
+#@st.cache_resource
+#def load_price_model():
+#    price_model_path = "modelo_precio.joblib"  
+#    return joblib.load(price_model_path)
 
-price_model = load_price_model()
+#price_model = load_price_model()
 
 # Cargar datos
 df_cars = pd.read_csv("df_modelo_limpio.csv")
