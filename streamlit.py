@@ -14,22 +14,6 @@ def load_price_model():
     price_model_path = "random_forest_pipeline_compressed.joblib"  
     return joblib.load(price_model_path)
 
-import streamlit as st
-import pandas as pd
-import joblib  
-import numpy as np 
-
-# Cargar modelos
-@st.cache_resource
-def load_pipeline():
-    pipeline_path = "modelo_correcto.joblib"
-    return joblib.load(pipeline_path)
-
-@st.cache_resource
-def load_price_model():
-    price_model_path = "modelo_precio.joblib"  
-    return joblib.load(price_model_path)
-
 # Cargar datos
 df_cars = pd.read_csv("df_modelo_limpio.csv")
 
