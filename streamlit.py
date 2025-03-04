@@ -106,46 +106,39 @@ def buscador_coches():
     # Título principal
     st.title("Buscador Inteligente de Coches de Segunda Mano")
 
-    # Columnas para layout
-    col1, col2 = st.columns([1, 2])
+    # Recoger características desde el sidebar
+    car_characteristics = sidebar_car_characteristics(mode='search')
 
-    with col1:
-        st.header("Características del Coche")
-        
-        # Inputs para características
-        year = st.slider("Año del coche", 2000, 2024, 2015, key="characteristics_year")
-        kms = st.number_input("Kilómetros recorridos", min_value=0, max_value=500000, value=50000, step=1000, key="characteristics_kms")
-        power = st.number_input("Potencia (CV)", min_value=50, max_value=600, value=150, step=10, key="characteristics_power")
-        vehicle_age = 2024 - year
-
-        fuel = st.selectbox("Tipo de combustible", ["Gasolina", "Diésel", "Eléctrico", "Híbrido"], index=0, key="characteristics_fuel")
-        shift = st.selectbox("Tipo de cambio", ["Manual", "Automático"], index=0, key="characteristics_shift")
-
-        make = st.text_input("Marca", key="characteristics_make")
-        model_input = st.text_input("Modelo", key="characteristics_model")
-        version = st.text_input("Versión", key="characteristics_version")
+    # Columna de resultados
+    col2 = st.container()
 
     with col2:
-        # Espacio para resultados
+        # Encabezado de resultados
         st.header("Resultados de Búsqueda")
         
         # Botón de búsqueda
         if st.button("Buscar Coches"):
             st.session_state.search_submitted = True
 
-        # Aquí la lógica de búsqueda y resultados
+        # Lógica de búsqueda y resultados
         if st.session_state.search_submitted:
+            # Extraer características
+            year = car_characteristics['year']
+            kms = car_characteristics['kms']
+            power = car_characteristics['power']
+            vehicle_age = 2024 - year
+
             # Crear dataframe con los valores introducidos
             input_data = pd.DataFrame({
                 'year': [year],
                 'kms': [kms],
                 'power': [power],
                 'vehicle_age': [vehicle_age],
-                'fuel': [fuel],
-                'shift': [shift],
-                'make': [make if make else None],
-                'model': [model_input if model_input else None],
-                'version': [version if version else None]
+                'fuel': [car_characteristics['fuel']],
+                'shift': [car_characteristics['shift']],
+                'make': [car_characteristics['make'] if car_characteristics['make'] else None],
+                'model': [car_characteristics['model'] if car_characteristics['model'] else None],
+                'version': [car_characteristics['version'] if car_characteristics['version'] else None]
             })
 
             # Add the same engineered features you used during training
@@ -217,10 +210,10 @@ def buscador_coches():
         
             # Aplicar filtros de tipo de combustible y tipo de cambio con coincidencia insensible a mayúsculas/minúsculas
             if 'fuel' in recommended_cars.columns:
-                recommended_cars = recommended_cars[recommended_cars['fuel'].fillna('').str.lower() == fuel.lower()]
+                recommended_cars = recommended_cars[recommended_cars['fuel'].fillna('').str.lower() == car_characteristics['fuel'].lower()]
         
             if 'shift' in recommended_cars.columns:
-                recommended_cars = recommended_cars[recommended_cars['shift'].fillna('').str.lower() == shift.lower()]
+                recommended_cars = recommended_cars[recommended_cars['shift'].fillna('').str.lower() == car_characteristics['shift'].lower()]
         
             # Muestra hasta 5 recomendaciones
             if len(recommended_cars) > 0:
@@ -296,36 +289,27 @@ def valoracion_coches():
     # Título principal
     st.title("Valoración de Coches de Segunda Mano")
 
-    # Columnas para layout
-    col1, col2 = st.columns([1, 2])
+    # Recoger características desde el sidebar
+    car_characteristics = sidebar_car_characteristics(mode='valuation')
 
-    with col1:
-        st.header("Características del Vehículo")
-        
-        # Inputs para características
-        price_year = st.slider("Año del coche", 2000, 2024, 2015, key="price_prediction_year")
-        price_kms = st.number_input("Kilómetros", min_value=0, max_value=500000, value=50000, key="price_prediction_kms")
-        price_power = st.number_input("Potencia (CV)", min_value=50, max_value=600, value=150, key="price_prediction_power")
-        price_fuel = st.selectbox("Tipo de combustible", ["Gasolina", "Diésel", "Eléctrico", "Híbrido"], key="price_prediction_fuel")
-        price_shift = st.selectbox("Tipo de cambio", ["Manual", "Automático"], key="price_prediction_shift")
-        price_make = st.text_input("Marca", key="price_prediction_make")
-        price_model = st.text_input("Modelo", key="price_prediction_model")
+    # Contenedor para resultados
+    result_container = st.container()
 
-    with col2:
+    with result_container:
         st.header("Resultado de la Valoración")
         
         # Botón de valoración
         if st.button("Valorar Coche"):
             # Preparar datos para modelo de precio
             price_input_data = pd.DataFrame({
-                'year': [price_year],
-                'kms': [price_kms],
-                'power': [price_power],
-                'make': [price_make],
-                'model': [price_model],
-                'fuel': [price_fuel],
-                'shift_manual': [1 if price_shift == 'Manual' else 0],
-                'shift_automatic': [1 if price_shift == 'Automático' else 0]
+                'year': [car_characteristics['year']],
+                'kms': [car_characteristics['kms']],
+                'power': [car_characteristics['power']],
+                'make': [car_characteristics['make']],
+                'model': [car_characteristics['model']],
+                'fuel': [car_characteristics['fuel']],
+                'shift_manual': [1 if car_characteristics['shift'] == 'Manual' else 0],
+                'shift_automatic': [1 if car_characteristics['shift'] == 'Automático' else 0]
             })
 
             # Cargar modelo de precio
@@ -339,13 +323,13 @@ def valoracion_coches():
             
             # Información adicional
             st.write("### Detalles de la Valoración")
-            st.write(f"- Año: {price_year}")
-            st.write(f"- Kilómetros: {price_kms:,}")
-            st.write(f"- Potencia: {price_power} CV")
-            st.write(f"- Combustible: {price_fuel}")
-            st.write(f"- Tipo de Cambio: {price_shift}")
-            st.write(f"- Marca: {price_make}")
-            st.write(f"- Modelo: {price_model}")
+            st.write(f"- Año: {car_characteristics['year']}")
+            st.write(f"- Kilómetros: {car_characteristics['kms']:,}")
+            st.write(f"- Potencia: {car_characteristics['power']} CV")
+            st.write(f"- Combustible: {car_characteristics['fuel']}")
+            st.write(f"- Tipo de Cambio: {car_characteristics['shift']}")
+            st.write(f"- Marca: {car_characteristics['make']}")
+            st.write(f"- Modelo: {car_characteristics['model']}")
 
 # Función principal para configurar la navegación
 def main():
