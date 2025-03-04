@@ -240,14 +240,19 @@ else:
     price_power = st.sidebar.number_input("Potencia (CV)", min_value=50, max_value=600, value=150, key="price_prediction_power")
     price_fuel = st.sidebar.selectbox("Tipo de combustible", ["Gasolina", "Diésel", "Eléctrico", "Híbrido"], key="price_prediction_fuel")
     price_shift = st.sidebar.selectbox("Tipo de cambio", ["Manual", "Automático"], key="price_prediction_shift")
-    
+    price_make = st.sidebar.text_input("Marca", key="price_prediction_make")
+    price_model = st.sidebar.text_input("Modelo", key="price_prediction_model")
+
     # Preparar datos para modelo de precio
     price_input_data = pd.DataFrame({
         'year': [price_year],
         'kms': [price_kms],
         'power': [price_power],
         'fuel': [price_fuel],
-        'shift': [price_shift]
+        'make': [price_make],
+        'model': [price_model],
+        'shift_manual': [1 if price_shift == 'Manual' else 0],
+        'shift_automatic': [1 if price_shift == 'Automático' else 0]
     })
 
     # Botón de predicción de precio
@@ -268,6 +273,8 @@ else:
         st.write(f"- Potencia: {price_power} CV")
         st.write(f"- Combustible: {price_fuel}")
         st.write(f"- Tipo de Cambio: {price_shift}")
+        st.write(f"- Marca: {price_make}")
+        st.write(f"- Modelo: {price_model}")
 
 # Estilos CSS
 st.markdown("""
