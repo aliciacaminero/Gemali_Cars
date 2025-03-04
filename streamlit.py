@@ -20,43 +20,37 @@ df_cars = pd.read_csv("df_modelo_limpio.csv")
 # Configuración de página
 st.set_page_config(layout="wide", page_title="AutoMatch", page_icon="🚗")
 
-# Sidebar de navegación
-st.sidebar.header("Menú")
-pagina = st.sidebar.radio(
-    "Selecciona una opción", 
-    ["Recomendador de Coches", "Calculadora de Precio"]
-)
+# Función para la página de inicio
+def pagina_inicio():
+    st.title("AutoMatch: Tu Buscador Inteligente de Coches de Segunda Mano")
 
-# Contenido de la página inicial
-st.title("AutoMatch: Tu Buscador Inteligente de Coches de Segunda Mano")
+    st.markdown("""
+    ## Bienvenido a AutoMatch 🚗
 
-st.markdown("""
-## Bienvenido a AutoMatch 🚗
+    ### ¿Qué hacemos?
+    AutoMatch es una herramienta inteligente diseñada para ayudarte a encontrar el coche de segunda mano perfecto en el mercado español. Utilizamos análisis de datos avanzados para ofrecerte recomendaciones personalizadas y valoraciones precisas.
 
-### ¿Qué hacemos?
-AutoMatch es una herramienta inteligente diseñada para ayudarte a encontrar el coche de segunda mano perfecto en el mercado español. Utilizamos análisis de datos avanzados para ofrecerte recomendaciones personalizadas y valoraciones precisas.
+    ### Nuestros Servicios
+    - **Buscador Inteligente de Coches**: Encuentra el vehículo de ocasión que mejor se adapta a tus necesidades.
+    - **Valoración Precisa de Coches**: Estima el valor real de un coche en el mercado español.
 
-### Nuestros Servicios
-- **Recomendador de Coches**: Encuentra el vehículo de ocasión que mejor se adapta a tus necesidades.
-- **Calculadora de Precio**: Estima el valor real de un coche en el mercado español.
+    ### Cómo Funciona
+    1. **Personalización**: Introduce las características que buscas.
+    2. **Análisis Inteligente**: Procesamos miles de datos de coches de segunda mano.
+    3. **Resultados Precisos**: Obtén recomendaciones y valoraciones exactas.
 
-### Cómo Funciona
-1. **Personalización**: Introduce las características que buscas.
-2. **Análisis Inteligente**: Procesamos miles de datos de coches de segunda mano.
-3. **Resultados Precisos**: Obtén recomendaciones y valoraciones exactas.
+    ### Ventajas
+    - 🎯 Recomendaciones 100% personalizadas
+    - 💡 Valoraciones basadas en datos reales del mercado español
+    - 🔍 Búsqueda inteligente de coches de ocasión
 
-### Ventajas
-- 🎯 Recomendaciones 100% personalizadas
-- 💡 Valoraciones basadas en datos reales del mercado español
-- 🔍 Búsqueda inteligente de coches de ocasión
+    ### ¿Listo para Encontrar tu Próximo Coche?
+    Usa el menú para comenzar tu búsqueda o calcular el precio de un vehículo.
+    """)
 
-### ¿Listo para Encontrar tu Próximo Coche?
-Usa el menú lateral para comenzar tu búsqueda o calcular el precio de un vehículo.
-""")
-
-# Recomendador de Coches
-if pagina == "Recomendador de Coches":
-    st.header("Recomendador de Coches de Segunda Mano")
+# Función para el Buscador Inteligente de Coches
+def buscador_coches():
+    st.header("Buscador Inteligente de Coches")
     
     # Inputs en el sidebar
     st.sidebar.header("Características del Coche")
@@ -119,7 +113,7 @@ if pagina == "Recomendador de Coches":
     pipeline = load_pipeline()
 
     # Predicción de precio y recomendaciones
-    if st.button("Predecir recomendaciones de coches"):
+    if st.button("Buscar Coches"):
         predicted_price = pipeline.predict(input_data)[0]
         st.write(f"### Precio estimado: {predicted_price:,.2f} €")
     
@@ -229,9 +223,9 @@ if pagina == "Recomendador de Coches":
         else:
             st.write("No se encontraron recomendaciones que coincidan con los criterios.")
 
-# Calculadora de Precio
-else:
-    st.header("Calculadora de Precio de Coche de Segunda Mano")
+# Función para la Valoración de Coches
+def valoracion_coches():
+    st.header("Valoración de Coches de Segunda Mano")
     
     # Inputs en el sidebar
     st.sidebar.header("Características del Vehículo")
@@ -243,7 +237,7 @@ else:
     price_make = st.sidebar.text_input("Marca", key="price_prediction_make")
     price_model = st.sidebar.text_input("Modelo", key="price_prediction_model")
 
-    # Preparar datos para modelo de precio - ASEGÚRATE DE MANTENER EL ORDEN DE LAS COLUMNAS
+    # Preparar datos para modelo de precio
     price_input_data = pd.DataFrame({
         'year': [price_year],
         'kms': [price_kms],
@@ -256,7 +250,7 @@ else:
     })
 
     # Botón de predicción de precio
-    if st.button("Predecir Precio"):
+    if st.button("Valorar Coche"):
         # Cargar modelo de precio
         price_model = load_price_model()
         
@@ -266,8 +260,8 @@ else:
         # Mostrar precio predicho
         st.metric("Precio Estimado", f"{predicted_price:,.2f} €")
         
-        # Opcional: Añadir información adicional
-        st.write("### Detalles de la Predicción")
+        # Información adicional
+        st.write("### Detalles de la Valoración")
         st.write(f"- Año: {price_year}")
         st.write(f"- Kilómetros: {price_kms:,}")
         st.write(f"- Potencia: {price_power} CV")
@@ -275,6 +269,21 @@ else:
         st.write(f"- Tipo de Cambio: {price_shift}")
         st.write(f"- Marca: {price_make}")
         st.write(f"- Modelo: {price_model}")
+
+# Menú de navegación
+def main():
+    st.sidebar.header("Menú")
+    pagina = st.sidebar.radio(
+        "Selecciona una opción", 
+        ["Inicio", "Buscador de Coches", "Valoración de Coches"]
+    )
+
+    if pagina == "Inicio":
+        pagina_inicio()
+    elif pagina == "Buscador de Coches":
+        buscador_coches()
+    else:
+        valoracion_coches()
 
 # Estilos CSS
 st.markdown("""
