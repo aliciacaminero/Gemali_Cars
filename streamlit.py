@@ -11,7 +11,7 @@ def load_pipeline():
 
 @st.cache_resource
 def load_price_model():
-    price_model_path = "modelo_precio.joblib"  
+    price_model_path = "random_forest_pipeline_compressed.joblib"  
     return joblib.load(price_model_path)
 
 # Cargar datos
