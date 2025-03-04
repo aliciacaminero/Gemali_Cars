@@ -31,7 +31,7 @@ with col1:
     # Sidebar para características del coche
     st.sidebar.header("Características del coche")
 
-    year = st.sidebar.slider("Año del coche", 2000, 2024, 2015)
+    year = st.sidebar.slider("Año del coche", 2000, 2024, 2015, key="characteristics_year")
     kms = st.sidebar.number_input("Kilómetros recorridos", min_value=0, max_value=500000, value=50000, step=1000)
     power = st.sidebar.number_input("Potencia (CV)", min_value=50, max_value=600, value=150, step=10)
     vehicle_age = 2024 - year
@@ -205,7 +205,7 @@ with col2:
     st.header("Predicción de Precio")
     
     # Inputs para predicción de precio
-    price_year = st.slider("Año del coche", 2000, 2024, 2015)
+    price_year = st.slider("Año del coche", 2000, 2024, 2015, key="price_prediction_year")
     price_kms = st.number_input("Kilómetros", min_value=0, max_value=500000, value=50000)
     price_power = st.number_input("Potencia (CV)", min_value=50, max_value=600, value=150)
     price_fuel = st.selectbox("Tipo de combustible", ["Gasolina", "Diésel", "Eléctrico", "Híbrido"])
