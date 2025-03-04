@@ -18,44 +18,44 @@ def load_price_model():
 df_cars = pd.read_csv("df_modelo_limpio.csv")
 
 # Configuración de página
-st.set_page_config(layout="wide", page_title="AutoMatch 🚗", page_icon="🚗")
-st.title("AutoMatch: Tu Buscador Inteligente de Coches de Segunda Mano")
+st.set_page_config(layout="wide", page_title="AutoMatch", page_icon="🚗")
 
 # Sidebar de navegación
-st.sidebar.header("Navegación")
+st.sidebar.header("Menú")
 pagina = st.sidebar.radio(
     "Selecciona una opción", 
-    ["Inicio", "Recomendador de Coches", "Calculadora de Precio"]
+    ["Recomendador de Coches", "Calculadora de Precio"]
 )
 
-# Página de Inicio (Predeterminada)
-if pagina == "Inicio":
-    st.markdown("""
-    ## Bienvenido a AutoMatch 🚗
+# Contenido de la página inicial
+st.title("AutoMatch: Tu Buscador Inteligente de Coches de Segunda Mano")
 
-    ### ¿Qué hacemos?
-    AutoMatch es una herramienta inteligente diseñada para ayudarte a encontrar el coche de segunda mano perfecto en el mercado español. Utilizamos análisis de datos avanzados para ofrecerte recomendaciones personalizadas y valoraciones precisas.
+st.markdown("""
+## Bienvenido a AutoMatch 🚗
 
-    ### Nuestros Servicios
-    - **Recomendador de Coches**: Encuentra el vehículo de ocasión que mejor se adapta a tus necesidades.
-    - **Calculadora de Precio**: Estima el valor real de un coche en el mercado español.
+### ¿Qué hacemos?
+AutoMatch es una herramienta inteligente diseñada para ayudarte a encontrar el coche de segunda mano perfecto en el mercado español. Utilizamos análisis de datos avanzados para ofrecerte recomendaciones personalizadas y valoraciones precisas.
 
-    ### Cómo Funciona
-    1. **Personalización**: Introduce las características que buscas.
-    2. **Análisis Inteligente**: Procesamos miles de datos de coches de segunda mano.
-    3. **Resultados Precisos**: Obtén recomendaciones y valoraciones exactas.
+### Nuestros Servicios
+- **Recomendador de Coches**: Encuentra el vehículo de ocasión que mejor se adapta a tus necesidades.
+- **Calculadora de Precio**: Estima el valor real de un coche en el mercado español.
 
-    ### Ventajas
-    - 🎯 Recomendaciones 100% personalizadas
-    - 💡 Valoraciones basadas en datos reales del mercado español
-    - 🔍 Búsqueda inteligente de coches de ocasión
+### Cómo Funciona
+1. **Personalización**: Introduce las características que buscas.
+2. **Análisis Inteligente**: Procesamos miles de datos de coches de segunda mano.
+3. **Resultados Precisos**: Obtén recomendaciones y valoraciones exactas.
 
-    ### ¿Listo para Encontrar tu Próximo Coche?
-    Usa el menú lateral para comenzar tu búsqueda o calcular el precio de un vehículo.
-    """)
+### Ventajas
+- 🎯 Recomendaciones 100% personalizadas
+- 💡 Valoraciones basadas en datos reales del mercado español
+- 🔍 Búsqueda inteligente de coches de ocasión
+
+### ¿Listo para Encontrar tu Próximo Coche?
+Usa el menú lateral para comenzar tu búsqueda o calcular el precio de un vehículo.
+""")
 
 # Recomendador de Coches
-elif pagina == "Recomendador de Coches":
+if pagina == "Recomendador de Coches":
     st.header("Recomendador de Coches de Segunda Mano")
     
     # Inputs en el sidebar
@@ -71,7 +71,7 @@ elif pagina == "Recomendador de Coches":
     make = st.sidebar.text_input("Marca", key="characteristics_make")
     model_input = st.sidebar.text_input("Modelo", key="characteristics_model")
     version = st.sidebar.text_input("Versión", key="characteristics_version")
-
+    
     # Crear dataframe con los valores introducidos
     input_data = pd.DataFrame({
         'year': [year],
@@ -243,14 +243,14 @@ else:
     price_make = st.sidebar.text_input("Marca", key="price_prediction_make")
     price_model = st.sidebar.text_input("Modelo", key="price_prediction_model")
 
-    # Preparar datos para modelo de precio
+    # Preparar datos para modelo de precio - ASEGÚRATE DE MANTENER EL ORDEN DE LAS COLUMNAS
     price_input_data = pd.DataFrame({
         'year': [price_year],
         'kms': [price_kms],
         'power': [price_power],
-        'fuel': [price_fuel],
         'make': [price_make],
         'model': [price_model],
+        'fuel': [price_fuel],
         'shift_manual': [1 if price_shift == 'Manual' else 0],
         'shift_automatic': [1 if price_shift == 'Automático' else 0]
     })
