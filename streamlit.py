@@ -18,15 +18,42 @@ def load_price_model():
 df_cars = pd.read_csv("df_modelo_limpio.csv")
 
 # Configuración de página
-st.set_page_config(layout="wide")
-st.title("🚗 Recomendador de Coches")
+st.set_page_config(layout="wide", page_title="AutoMatch 🚗", page_icon="🚗")
+st.title("AutoMatch: Tu Asistente Inteligente de Coches de Segunda Mano")
 
 # Selector de modelo en el sidebar
 st.sidebar.header("Selector de Modelo")
 modelo_seleccionado = st.sidebar.radio(
     "Elige el modelo de recomendación", 
-    ["Recomendador de Coches", "Predicción de Precio"]
+    ["Inicio", "Recomendador de Coches", "Predicción de Precio"]
 )
+
+# Página de Inicio
+if modelo_seleccionado == "Inicio":
+    st.markdown("""
+    ## Bienvenido a AutoMatch 🚗
+
+    ### ¿Qué es AutoMatch?
+    AutoMatch es una plataforma inteligente diseñada para ayudarte a encontrar el coche de segunda mano perfecto. Utilizando técnicas avanzadas de análisis de datos e inteligencia artificial, te ofrecemos recomendaciones personalizadas y predicciones de precio precisas.
+
+    ### Nuestros Servicios
+    - **Recomendador de Coches**: Encuentra los mejores coches que se adaptan exactamente a tus necesidades.
+    - **Predicción de Precio**: Estima el valor justo de un coche basado en sus características.
+
+    ### Cómo Funciona
+    1. **Personalización**: Introduce las características que buscas en un coche.
+    2. **Análisis Inteligente**: Nuestro algoritmo procesa miles de datos para encontrar las mejores opciones.
+    3. **Recomendaciones Precisas**: Obtén una lista de coches que coinciden con tus criterios.
+
+    ### Beneficios
+    - 🎯 Recomendaciones personalizadas
+    - 💡 Predicciones de precio basadas en datos reales
+    - 🔍 Búsqueda inteligente de coches de segunda mano
+
+    ### Comienza Ahora
+    Selecciona "Recomendador de Coches" o "Predicción de Precio" en el menú lateral para empezar tu búsqueda.
+    """)
+
 
 # Columna de Características
 if modelo_seleccionado == "Recomendador de Coches":
