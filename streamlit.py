@@ -114,6 +114,7 @@ def buscador_coches():
 
     # Predicción de precio y recomendaciones
     if st.button("Buscar Coches"):
+        # [Código de predicción y recomendación - se mantiene igual]
         predicted_price = pipeline.predict(input_data)[0]
         st.write(f"### Precio estimado: {predicted_price:,.2f} €")
     
@@ -223,9 +224,9 @@ def buscador_coches():
         else:
             st.write("No se encontraron recomendaciones que coincidan con los criterios.")
 
-# Función para la Valoración de Coches
-def valoracion_coches():
-    st.header("Valoración de Coches de Segunda Mano")
+# Calculadora de Precio
+else:
+    st.header("Calculadora de Precio de Coche de Segunda Mano")
     
     # Inputs en el sidebar
     st.sidebar.header("Características del Vehículo")
@@ -237,7 +238,7 @@ def valoracion_coches():
     price_make = st.sidebar.text_input("Marca", key="price_prediction_make")
     price_model = st.sidebar.text_input("Modelo", key="price_prediction_model")
 
-    # Preparar datos para modelo de precio
+    # Preparar datos para modelo de precio - ASEGÚRATE DE MANTENER EL ORDEN DE LAS COLUMNAS
     price_input_data = pd.DataFrame({
         'year': [price_year],
         'kms': [price_kms],
@@ -250,7 +251,7 @@ def valoracion_coches():
     })
 
     # Botón de predicción de precio
-    if st.button("Valorar Coche"):
+    if st.button("Predecir Precio"):
         # Cargar modelo de precio
         price_model = load_price_model()
         
@@ -260,8 +261,8 @@ def valoracion_coches():
         # Mostrar precio predicho
         st.metric("Precio Estimado", f"{predicted_price:,.2f} €")
         
-        # Información adicional
-        st.write("### Detalles de la Valoración")
+        # Opcional: Añadir información adicional
+        st.write("### Detalles de la Predicción")
         st.write(f"- Año: {price_year}")
         st.write(f"- Kilómetros: {price_kms:,}")
         st.write(f"- Potencia: {price_power} CV")
@@ -269,21 +270,6 @@ def valoracion_coches():
         st.write(f"- Tipo de Cambio: {price_shift}")
         st.write(f"- Marca: {price_make}")
         st.write(f"- Modelo: {price_model}")
-
-# Menú de navegación
-def main():
-    st.sidebar.header("Menú")
-    pagina = st.sidebar.radio(
-        "Selecciona una opción", 
-        ["Inicio", "Buscador de Coches", "Valoración de Coches"]
-    )
-
-    if pagina == "Inicio":
-        pagina_inicio()
-    elif pagina == "Buscador de Coches":
-        buscador_coches()
-    else:
-        valoracion_coches()
 
 # Estilos CSS
 st.markdown("""
@@ -294,4 +280,4 @@ st.markdown("""
     padding: 20px;
 }
 </style>
-""", unsafe_allow_html=True) 
+""", unsafe_allow_html=True)
