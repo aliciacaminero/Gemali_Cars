@@ -57,10 +57,10 @@ input_data['model_popularity'] = 0
 input_data['make_popularity'] = 0
 
 # Additional calculated fields
-input_data['price_per_power'] = 0  # Will be ignored by the model since we don't have price yet
+input_data['price_per_power'] = 0  
 input_data['power_per_kms'] = input_data['power'] / (input_data['kms'] + 1)
-input_data['price_per_year'] = 0  # Will be ignored 
-input_data['price_range'] = 'medium'  # Default category
+input_data['price_per_year'] = 0  
+input_data['price_range'] = 'medium'  
 
 # Dealer information (using placeholders)
 input_data['dealer_zip_code'] = '00000'
@@ -71,15 +71,15 @@ input_data['dealer_name'] = 'unknown'
 input_data['dealer_address'] = 'unknown'
 
 # Other features
-input_data['big_city_dealer'] = 0  # Boolean feature, 0 for false
-input_data['normalized_version'] = input_data['version']  # Use the same value or normalize it if needed
+input_data['big_city_dealer'] = 0  
+input_data['normalized_version'] = input_data['version']  
 
 # Predicción de precio
-if st.button("Predecir Precio"):
+if st.button("Predecir recomendaciones de coches"):
     predicted_price = pipeline.predict(input_data)[0]
     st.write(f"### Precio estimado: {predicted_price:,.2f} €")
     
-    # Filtrar coches dentro de un margen de ±5% del precio predicho (cambiado de 10% a 5%)
+    # Filtrar coches dentro de un margen de ±5% del precio predicho 
     margin = 0.05  
     min_price = predicted_price * (1 - margin)
     max_price = predicted_price * (1 + margin)
@@ -90,7 +90,7 @@ if st.button("Predecir Precio"):
     # Aplicar filtro de precio
     recommended_cars = recommended_cars[(recommended_cars['price'] >= min_price) & (recommended_cars['price'] <= max_price)]
     
-    # Filtrar coches dentro de un margen de ±5% de los kilómetros ingresados (cambiado de 10% a 5%)
+    # Filtrar coches dentro de un margen de ±5% de los kilómetros ingresados 
     km_margin = 0.05  
     min_kms = kms * (1 - km_margin)
     max_kms = kms * (1 + km_margin)
@@ -98,7 +98,7 @@ if st.button("Predecir Precio"):
     recommended_cars = recommended_cars[(recommended_cars['kms'] >= min_kms) & (recommended_cars['kms'] <= max_kms)]
     
     # Aplicar filtro de potencia con un margen (±10%)
-    power_margin = 0.10  # Mantener en 10% como solicitaste
+    power_margin = 0.10 
     min_power = power * (1 - power_margin)
     max_power = power * (1 + power_margin)
     
@@ -154,7 +154,7 @@ if st.button("Predecir Precio"):
         # Formatear potencia sin decimales
         formatted_cars['potencia'] = formatted_cars['potencia'].apply(lambda x: f"{x:.0f}")
         
-        st.write("### Recomendaciones basadas en el precio")
+        st.write("### Recomendaciones según las características introducidas:")
         
         # Definir columnas de visualización - solo columnas que queremos mostrar
         display_columns = [
