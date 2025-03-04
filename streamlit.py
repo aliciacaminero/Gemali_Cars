@@ -51,6 +51,52 @@ def pagina_inicio():
     - 🔍 Búsqueda inteligente de coches de ocasión
     """)
 
+# Función para añadir las características del coche en el sidebar
+def sidebar_car_characteristics(mode='search'):
+    st.sidebar.header("Características del Coche")
+    
+    # Si es modo de búsqueda
+    if mode == 'search':
+        year = st.sidebar.slider("Año del coche", 2000, 2024, 2015, key="characteristics_year")
+        kms = st.sidebar.number_input("Kilómetros recorridos", min_value=0, max_value=500000, value=50000, step=1000, key="characteristics_kms")
+        power = st.sidebar.number_input("Potencia (CV)", min_value=50, max_value=600, value=150, step=10, key="characteristics_power")
+        fuel = st.sidebar.selectbox("Tipo de combustible", ["Gasolina", "Diésel", "Eléctrico", "Híbrido"], index=0, key="characteristics_fuel")
+        shift = st.sidebar.selectbox("Tipo de cambio", ["Manual", "Automático"], index=0, key="characteristics_shift")
+        make = st.sidebar.text_input("Marca", key="characteristics_make")
+        model_input = st.sidebar.text_input("Modelo", key="characteristics_model")
+        version = st.sidebar.text_input("Versión", key="characteristics_version")
+        
+        return {
+            'year': year, 
+            'kms': kms, 
+            'power': power, 
+            'fuel': fuel, 
+            'shift': shift, 
+            'make': make, 
+            'model': model_input, 
+            'version': version
+        }
+    
+    # Si es modo de valoración
+    elif mode == 'valuation':
+        price_year = st.sidebar.slider("Año del coche", 2000, 2024, 2015, key="price_prediction_year")
+        price_kms = st.sidebar.number_input("Kilómetros", min_value=0, max_value=500000, value=50000, key="price_prediction_kms")
+        price_power = st.sidebar.number_input("Potencia (CV)", min_value=50, max_value=600, value=150, key="price_prediction_power")
+        price_fuel = st.sidebar.selectbox("Tipo de combustible", ["Gasolina", "Diésel", "Eléctrico", "Híbrido"], key="price_prediction_fuel")
+        price_shift = st.sidebar.selectbox("Tipo de cambio", ["Manual", "Automático"], key="price_prediction_shift")
+        price_make = st.sidebar.text_input("Marca", key="price_prediction_make")
+        price_model = st.sidebar.text_input("Modelo", key="price_prediction_model")
+        
+        return {
+            'year': price_year, 
+            'kms': price_kms, 
+            'power': price_power, 
+            'fuel': price_fuel, 
+            'shift': price_shift, 
+            'make': price_make, 
+            'model': price_model
+        }
+
 # Función para el Buscador Inteligente de Coches
 def buscador_coches():
     # Estado inicial de la aplicación de búsqueda
