@@ -3,20 +3,21 @@ import pandas as pd
 import joblib  
 import numpy as np 
 
-# Cargar el modelo
+import streamlit as st
+import pandas as pd
+import joblib  
+import numpy as np 
+
+# Cargar modelos
 @st.cache_resource
 def load_pipeline():
-    pipeline_path = "modelo_correcto.joblib"  # Path to your saved pipeline
+    pipeline_path = "modelo_correcto.joblib"
     return joblib.load(pipeline_path)
 
-pipeline = load_pipeline()
-
-#@st.cache_resource
-#def load_price_model():
-#    price_model_path = "modelo_precio.joblib"  
-#    return joblib.load(price_model_path)
-
-#price_model = load_price_model()
+@st.cache_resource
+def load_price_model():
+    price_model_path = "modelo_precio.joblib"  
+    return joblib.load(price_model_path)
 
 # Cargar datos
 df_cars = pd.read_csv("df_modelo_limpio.csv")
@@ -90,63 +91,66 @@ with col1:
     input_data['big_city_dealer'] = 0  
     input_data['normalized_version'] = input_data['version']  
 
-    # Predicción de precio
+    # Cargar pipeline
+    pipeline = load_pipeline()
+
+    # Predicción de precio y recomendaciones
     if st.button("Predecir recomendaciones de coches"):
         predicted_price = pipeline.predict(input_data)[0]
         st.write(f"### Precio estimado: {predicted_price:,.2f} €")
     
-    # Filtrar coches dentro de un margen de ±5% del precio predicho 
+        # Filtrar coches dentro de un margen de ±5% del precio predicho 
         margin = 0.05  
         min_price = predicted_price * (1 - margin)
         max_price = predicted_price * (1 + margin)
     
-    # Crear una copia profunda para evitar advertencias de modificación
+        # Crear una copia profunda para evitar advertencias de modificación
         recommended_cars = df_cars.copy()
     
-    # Aplicar filtro de precio
+        # Aplicar filtro de precio
         recommended_cars = recommended_cars[(recommended_cars['price'] >= min_price) & (recommended_cars['price'] <= max_price)]
     
-    # Filtrar coches dentro de un margen de ±5% de los kilómetros ingresados 
+        # Filtrar coches dentro de un margen de ±5% de los kilómetros ingresados 
         km_margin = 0.05  
         min_kms = kms * (1 - km_margin)
         max_kms = kms * (1 + km_margin)
     
         recommended_cars = recommended_cars[(recommended_cars['kms'] >= min_kms) & (recommended_cars['kms'] <= max_kms)]
     
-    # Aplicar filtro de potencia con un margen (±10%)
+        # Aplicar filtro de potencia con un margen (±10%)
         power_margin = 0.10 
         min_power = power * (1 - power_margin)
         max_power = power * (1 + power_margin)
     
-    # Asegurar que la potencia sea numérica antes de filtrar
+        # Asegurar que la potencia sea numérica antes de filtrar
         if 'power' in recommended_cars.columns:
-        # Convertir a numérico si aún no lo es
+            # Convertir a numérico si aún no lo es
             recommended_cars['power'] = pd.to_numeric(recommended_cars['power'], errors='coerce')
             recommended_cars = recommended_cars[(recommended_cars['power'] >= min_power) & 
                                           (recommended_cars['power'] <= max_power)]
     
-    # Aplicar filtros de tipo de combustible y tipo de cambio con coincidencia insensible a mayúsculas/minúsculas
+        # Aplicar filtros de tipo de combustible y tipo de cambio con coincidencia insensible a mayúsculas/minúsculas
         if 'fuel' in recommended_cars.columns:
             recommended_cars = recommended_cars[recommended_cars['fuel'].fillna('').str.lower() == fuel.lower()]
     
         if 'shift' in recommended_cars.columns:
             recommended_cars = recommended_cars[recommended_cars['shift'].fillna('').str.lower() == shift.lower()]
     
-    # Muestra hasta 5 recomendaciones
+        # Muestra hasta 5 recomendaciones
         if len(recommended_cars) > 0:
-        # Determinar cuántas recomendaciones mostrar (hasta 5)
+            # Determinar cuántas recomendaciones mostrar (hasta 5)
             num_recommendations = min(5, len(recommended_cars))
         
-        # Muestreo sin reemplazo
+            # Muestreo sin reemplazo
             recommended_cars = recommended_cars.sample(num_recommendations)
         
-        # Restablecer índice para evitar que los valores de índice aparezcan en la tabla
+            # Restablecer índice para evitar que los valores de índice aparezcan en la tabla
             recommended_cars = recommended_cars.reset_index(drop=True)
         
-        # Formatear datos de visualización
+            # Formatear datos de visualización
             formatted_cars = recommended_cars.copy()
         
-        # Cambiar nombres de columnas en inglés a español
+            # Cambiar nombres de columnas en inglés a español
             column_mapping = {
                 'make': 'marca',
                 'model': 'modelo',
@@ -158,37 +162,37 @@ with col1:
                 'price': 'precio'
             }
         
-        # Renombrar columnas
+            # Renombrar columnas
             formatted_cars = formatted_cars.rename(columns=column_mapping)
         
-        # Formatear kilómetros con punto como separador de miles
+            # Formatear kilómetros con punto como separador de miles
             formatted_cars['kilómetros'] = formatted_cars['kilómetros'].apply(lambda x: f"{x:,.0f}".replace(",", "."))
         
-        # Formatear precio con coma como separador decimal
+            # Formatear precio con coma como separador decimal
             formatted_cars['precio'] = formatted_cars['precio'].apply(lambda x: f"{x:,.2f}".replace(",", ".").replace(".", ",", 1))
         
-        # Formatear potencia sin decimales
+            # Formatear potencia sin decimales
             formatted_cars['potencia'] = formatted_cars['potencia'].apply(lambda x: f"{x:.0f}")
         
             st.write("### Recomendaciones según las características introducidas:")
         
-        # Definir columnas de visualización - solo columnas que queremos mostrar
+            # Definir columnas de visualización - solo columnas que queremos mostrar
             display_columns = [
                 'marca', 'modelo', 'versión', 'potencia', 'cambio', 'combustible', 
                 'kilómetros', 'precio'
             ]
         
-        # Solo incluir columnas que existen en el dataframe
+            # Solo incluir columnas que existen en el dataframe
             display_columns = [col for col in display_columns if col in formatted_cars.columns]
         
-        # Usar st.dataframe en lugar de st.table para tener más control
+            # Usar st.dataframe en lugar de st.table para tener más control
             st.dataframe(
                 formatted_cars[display_columns],
-            # Ocultar el índice
+                # Ocultar el índice
                 hide_index=True
             )
         
-        # Mostrar información detallada del vendedor para cada recomendación
+            # Mostrar información detallada del vendedor para cada recomendación
             st.write("### Información detallada de los vendedores")
             for i, car in enumerate(recommended_cars.itertuples(), 1):
                 st.write(f"**Opción {i}: {car.make} {car.model}**")
