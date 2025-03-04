@@ -286,6 +286,9 @@ def main():
 # Mostrar página de inicio al principio
 pagina_inicio()
 
+# Llamar a la función main para mostrar el menú de navegación
+main()
+
 # Estilos CSS
 st.markdown("""
 <style>
