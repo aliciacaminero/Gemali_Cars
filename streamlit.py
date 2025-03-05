@@ -300,6 +300,25 @@ def valoracion_coches():
         
         # Botón de valoración
         if st.button("Valorar Coche"):
+            # Cargar modelo de precio
+            price_model = load_price_model()
+
+            # Depuración: imprimir nombres de características
+            try:
+                # Intentar obtener nombres de características
+                if hasattr(price_model, 'feature_names_in_'):
+                    st.write("Nombres de características del modelo:")
+                    st.write(price_model.feature_names_in_)
+                
+                # Si el modelo es un pipeline, intentar obtener características
+                if hasattr(price_model, 'named_steps'):
+                    for step_name, step in price_model.named_steps.items():
+                        st.write(f"Paso {step_name}:")
+                        if hasattr(step, 'feature_names_in_'):
+                            st.write(step.feature_names_in_)
+            except Exception as e:
+                st.error(f"Error al obtener nombres de características: {e}")
+
             # Validar que se hayan ingresado los campos obligatorios
             required_fields = ['make', 'model', 'fuel', 'year', 'kms', 'power', 'shift']
             missing_fields = [field for field in required_fields if not car_characteristics.get(field)]
@@ -308,15 +327,10 @@ def valoracion_coches():
                 st.error(f"Por favor, complete los siguientes campos: {', '.join(missing_fields)}")
             else:
                 try:
-                    # Cargar modelo de precio
-                    price_model = load_price_model()
-
-                    # Depuración: imprimir la estructura del modelo
-                    st.write("Estructura del modelo:")
-                    st.write(dir(price_model))
-
-                    # Preparar datos para modelo de precio de manera más flexible
+                    # IMPORTANTE: Aquí necesitarás ajustar los nombres de las columnas
+                    # según los que se muestren en la depuración
                     price_input_data = pd.DataFrame({
+                        # EJEMPLO: reemplaza estos nombres con los reales de tu modelo
                         'make': [str(car_characteristics['make']).strip()],
                         'model': [str(car_characteristics['model']).strip()],
                         'fuel': [str(car_characteristics['fuel']).strip()],
