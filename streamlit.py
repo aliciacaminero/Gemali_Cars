@@ -300,16 +300,16 @@ def valoracion_coches():
         
         # Botón de valoración
         if st.button("Valorar Coche"):
-            # Preparar datos para modelo de precio
+            # Preparar datos para modelo de precio - CORREGIDO
             price_input_data = pd.DataFrame({
-                'year': [car_characteristics['year']],
-                'kms': [car_characteristics['kms']],
-                'power': [car_characteristics['power']],
                 'make': [car_characteristics['make']],
                 'model': [car_characteristics['model']],
                 'fuel': [car_characteristics['fuel']],
-                'shift_manual': [1 if car_characteristics['shift'] == 'Manual' else 0],
-                'shift_automatic': [1 if car_characteristics['shift'] == 'Automático' else 0]
+                'year': [car_characteristics['year']],
+                'kms': [car_characteristics['kms']],
+                'power': [car_characteristics['power']],
+                'shift_automatic': [1 if car_characteristics['shift'] == 'Automático' else 0],
+                'shift_manual': [1 if car_characteristics['shift'] == 'Manual' else 0]
             })
 
             # Cargar modelo de precio
@@ -330,7 +330,7 @@ def valoracion_coches():
             st.write(f"- Tipo de Cambio: {car_characteristics['shift']}")
             st.write(f"- Marca: {car_characteristics['make']}")
             st.write(f"- Modelo: {car_characteristics['model']}")
-
+            
 # Función principal para configurar la navegación
 def main():
     # Sidebar para navegación
