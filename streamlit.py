@@ -15,10 +15,6 @@ def load_price_model():
     price_model_path = "model_with_encoders.joblib"  
     return joblib.load(price_model_path)
 
-st.write(type(load_price_model())) 
-st.write(type(load_pipeline())) 
-st.write(price_model = load_price_model())
-
 # Cargar datos
 df_cars = pd.read_csv("df_modelo_limpio.csv")
 
