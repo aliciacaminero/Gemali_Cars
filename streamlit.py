@@ -308,19 +308,23 @@ def valoracion_coches():
                 st.error(f"Por favor, complete los siguientes campos: {', '.join(missing_fields)}")
             else:
                 try:
-                    # Preparar datos con nombres de columnas exactos
+                    # Preparar datos con columnas separadas
                     price_input_data = pd.DataFrame({
-                        'makemodelfuelyearkmspowershift_automaticshift_manual': [
-                            str(car_characteristics['make']) + 
-                            str(car_characteristics['model']) + 
-                            str(car_characteristics['fuel']) + 
-                            str(car_characteristics['year']) + 
-                            str(car_characteristics['kms']) + 
-                            str(car_characteristics['power']) + 
-                            str(1 if car_characteristics['shift'] == 'Automático' else 0) + 
-                            str(1 if car_characteristics['shift'] == 'Manual' else 0)
-                        ]
+                        'make': [str(car_characteristics['make']).strip()],
+                        'model': [str(car_characteristics['model']).strip()],
+                        'fuel': [str(car_characteristics['fuel']).strip()],
+                        'year': [int(car_characteristics['year'])],
+                        'kms': [float(car_characteristics['kms'])],
+                        'power': [float(car_characteristics['power'])],
+                        'shift_automatic': [1 if car_characteristics['shift'] == 'Automático' else 0],
+                        'shift_manual': [1 if car_characteristics['shift'] == 'Manual' else 0]
                     })
+
+                    # Depuración: imprimir las columnas del DataFrame de entrada
+                    st.write("Columnas de entrada:")
+                    st.write(price_input_data.columns)
+                    st.write("Datos de entrada:")
+                    st.write(price_input_data)
 
                     # Cargar modelo de precio
                     price_model = load_price_model()
