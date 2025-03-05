@@ -311,27 +311,20 @@ def valoracion_coches():
                     # Cargar modelo de precio
                     price_model = load_price_model()
 
-                    # Recuperar los pasos del pipeline
-                    preprocessor = price_model.named_steps.get('preprocessor')
-                    make_encoder = preprocessor.named_transformers_['cat'].named_steps.get('make_encoder')
-                    model_encoder = preprocessor.named_transformers_['cat'].named_steps.get('model_encoder')
-                    fuel_encoder = preprocessor.named_transformers_['cat'].named_steps.get('fuel_encoder')
+                    # Depuración: imprimir la estructura del modelo
+                    st.write("Estructura del modelo:")
+                    st.write(dir(price_model))
 
-                    # Codificar marca, modelo y combustible
-                    make_encoded = make_encoder.transform([car_characteristics['make']])[0]
-                    model_encoded = model_encoder.transform([car_characteristics['model']])[0]
-                    fuel_encoded = fuel_encoder.transform([car_characteristics['fuel']])[0]
-
-                    # Preparar datos para modelo de precio
+                    # Preparar datos para modelo de precio de manera más flexible
                     price_input_data = pd.DataFrame({
-                        'make': [make_encoded],
-                        'model': [model_encoded],
-                        'fuel': [fuel_encoded],
+                        'make': [str(car_characteristics['make']).strip()],
+                        'model': [str(car_characteristics['model']).strip()],
+                        'fuel': [str(car_characteristics['fuel']).strip()],
                         'year': [int(car_characteristics['year'])],
                         'kms': [float(car_characteristics['kms'])],
                         'power': [float(car_characteristics['power'])],
-                        'shift_automatic': [1 if car_characteristics['shift'] == 'Automático' else 0],
-                        'shift_manual': [1 if car_characteristics['shift'] == 'Manual' else 0]
+                        'shift_manual': [1 if car_characteristics['shift'] == 'Manual' else 0],
+                        'shift_automatic': [1 if car_characteristics['shift'] == 'Automático' else 0]
                     })
 
                     # Predecir precio
