@@ -28,7 +28,7 @@ def reset_state():
 
 # Función para la página de inicio
 def pagina_inicio():
-    st.title("AutoMatch: Tu Buscador Inteligente de Coches de Segunda Mano")
+    st.title("AutoMatch: Tu Asistente Inteligente de Coches de Segunda Mano")
 
     st.markdown("""
     ## Bienvenido a AutoMatch 🚗
@@ -41,12 +41,12 @@ def pagina_inicio():
     - **Valoración Precisa de Coches**: Estima el valor real de un coche en el mercado español.
 
     ### Cómo Funciona
-    1. **Personalización**: Introduce las características que buscas.
-    2. **Análisis Inteligente**: Procesamos miles de datos de coches de segunda mano.
-    3. **Resultados Precisos**: Obtén recomendaciones y valoraciones exactas.
+    1. **Personalización**: Introduce las características que buscas en un coche.
+    2. **Análisis Inteligente**: Procesamos datos de coches de segunda mano utilizando nuestros modelos entrenados para ofrecerte recomendaciones personalizadas.
+    3. **Resultados Precisos**: Obtén recomendaciones y valoraciones exactas basadas en datos reales del mercado español.
 
     ### Ventajas
-    - 🎯 Recomendaciones 100% personalizadas
+    - 🎯 Recibe recomendaciones 100% personalizadas a tus necesidades
     - 💡 Valoraciones basadas en datos reales del mercado español
     - 🔍 Búsqueda inteligente de coches de ocasión
     """)
