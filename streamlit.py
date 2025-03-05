@@ -300,36 +300,48 @@ def valoracion_coches():
         
         # Botón de valoración
         if st.button("Valorar Coche"):
-            # Preparar datos para modelo de precio - CORREGIDO
-            price_input_data = pd.DataFrame({
-                'make': [car_characteristics['make']],
-                'model': [car_characteristics['model']],
-                'fuel': [car_characteristics['fuel']],
-                'year': [car_characteristics['year']],
-                'kms': [car_characteristics['kms']],
-                'power': [car_characteristics['power']],
-                'shift_automatic': [1 if car_characteristics['shift'] == 'Automático' else 0],
-                'shift_manual': [1 if car_characteristics['shift'] == 'Manual' else 0]
-            })
+            # Validar que se hayan ingresado los campos obligatorios
+            required_fields = ['make', 'model', 'fuel', 'year', 'kms', 'power', 'shift']
+            missing_fields = [field for field in required_fields if not car_characteristics.get(field)]
+            
+            if missing_fields:
+                st.error(f"Por favor, complete los siguientes campos: {', '.join(missing_fields)}")
+            else:
+                try:
+                    # Preparar datos para modelo de precio - CON VALIDACIONES
+                    price_input_data = pd.DataFrame({
+                        'make': [str(car_characteristics['make']).strip() or 'Unknown'],
+                        'model': [str(car_characteristics['model']).strip() or 'Unknown'],
+                        'fuel': [str(car_characteristics['fuel']).strip() or 'Unknown'],
+                        'year': [int(car_characteristics['year'])],
+                        'kms': [float(car_characteristics['kms'])],
+                        'power': [float(car_characteristics['power'])],
+                        'shift_automatic': [1 if car_characteristics['shift'] == 'Automático' else 0],
+                        'shift_manual': [1 if car_characteristics['shift'] == 'Manual' else 0]
+                    })
 
-            # Cargar modelo de precio
-            price_model = load_price_model()
-            
-            # Predecir precio
-            predicted_price = price_model.predict(price_input_data)[0]
-            
-            # Mostrar precio predicho
-            st.metric("Precio Estimado", f"{predicted_price:,.2f} €")
-            
-            # Información adicional
-            st.write("### Detalles de la Valoración")
-            st.write(f"- Año: {car_characteristics['year']}")
-            st.write(f"- Kilómetros: {car_characteristics['kms']:,}")
-            st.write(f"- Potencia: {car_characteristics['power']} CV")
-            st.write(f"- Combustible: {car_characteristics['fuel']}")
-            st.write(f"- Tipo de Cambio: {car_characteristics['shift']}")
-            st.write(f"- Marca: {car_characteristics['make']}")
-            st.write(f"- Modelo: {car_characteristics['model']}")
+                    # Cargar modelo de precio
+                    price_model = load_price_model()
+                    
+                    # Predecir precio
+                    predicted_price = price_model.predict(price_input_data)[0]
+                    
+                    # Mostrar precio predicho
+                    st.metric("Precio Estimado", f"{predicted_price:,.2f} €")
+                    
+                    # Información adicional
+                    st.write("### Detalles de la Valoración")
+                    st.write(f"- Año: {car_characteristics['year']}")
+                    st.write(f"- Kilómetros: {car_characteristics['kms']:,}")
+                    st.write(f"- Potencia: {car_characteristics['power']} CV")
+                    st.write(f"- Combustible: {car_characteristics['fuel']}")
+                    st.write(f"- Tipo de Cambio: {car_characteristics['shift']}")
+                    st.write(f"- Marca: {car_characteristics['make']}")
+                    st.write(f"- Modelo: {car_characteristics['model']}")
+                
+                except Exception as e:
+                    st.error(f"Error al valorar el coche: {str(e)}")
+                    st.error("Por favor, verifique que todos los campos estén correctamente completados.")
             
 # Función principal para configurar la navegación
 def main():
