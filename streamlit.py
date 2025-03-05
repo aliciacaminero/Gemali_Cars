@@ -300,25 +300,6 @@ def valoracion_coches():
         
         # Botón de valoración
         if st.button("Valorar Coche"):
-            # Cargar modelo de precio
-            price_model = load_price_model()
-
-            # Depuración: imprimir nombres de características
-            try:
-                # Intentar obtener nombres de características
-                if hasattr(price_model, 'feature_names_in_'):
-                    st.write("Nombres de características del modelo:")
-                    st.write(price_model.feature_names_in_)
-                
-                # Si el modelo es un pipeline, intentar obtener características
-                if hasattr(price_model, 'named_steps'):
-                    for step_name, step in price_model.named_steps.items():
-                        st.write(f"Paso {step_name}:")
-                        if hasattr(step, 'feature_names_in_'):
-                            st.write(step.feature_names_in_)
-            except Exception as e:
-                st.error(f"Error al obtener nombres de características: {e}")
-
             # Validar que se hayan ingresado los campos obligatorios
             required_fields = ['make', 'model', 'fuel', 'year', 'kms', 'power', 'shift']
             missing_fields = [field for field in required_fields if not car_characteristics.get(field)]
@@ -327,20 +308,23 @@ def valoracion_coches():
                 st.error(f"Por favor, complete los siguientes campos: {', '.join(missing_fields)}")
             else:
                 try:
-                    # IMPORTANTE: Aquí necesitarás ajustar los nombres de las columnas
-                    # según los que se muestren en la depuración
+                    # Preparar datos con nombres de columnas exactos
                     price_input_data = pd.DataFrame({
-                        # EJEMPLO: reemplaza estos nombres con los reales de tu modelo
-                        'make': [str(car_characteristics['make']).strip()],
-                        'model': [str(car_characteristics['model']).strip()],
-                        'fuel': [str(car_characteristics['fuel']).strip()],
-                        'year': [int(car_characteristics['year'])],
-                        'kms': [float(car_characteristics['kms'])],
-                        'power': [float(car_characteristics['power'])],
-                        'shift_manual': [1 if car_characteristics['shift'] == 'Manual' else 0],
-                        'shift_automatic': [1 if car_characteristics['shift'] == 'Automático' else 0]
+                        'makemodelfuelyearkmspowershift_automaticshift_manual': [
+                            str(car_characteristics['make']) + 
+                            str(car_characteristics['model']) + 
+                            str(car_characteristics['fuel']) + 
+                            str(car_characteristics['year']) + 
+                            str(car_characteristics['kms']) + 
+                            str(car_characteristics['power']) + 
+                            str(1 if car_characteristics['shift'] == 'Automático' else 0) + 
+                            str(1 if car_characteristics['shift'] == 'Manual' else 0)
+                        ]
                     })
 
+                    # Cargar modelo de precio
+                    price_model = load_price_model()
+                    
                     # Predecir precio
                     predicted_price = price_model.predict(price_input_data)[0]
                     
@@ -359,7 +343,7 @@ def valoracion_coches():
                 
                 except Exception as e:
                     st.error(f"Error al valorar el coche: {str(e)}")
-                    st.error("Por favor, verifique que todos los campos estén correctamente completados.")
+                    st.error("Por favor, verifique que todos los campos estén completados correctamente.")
                     # Imprimir el error completo para depuración
                     import traceback
                     st.error(traceback.format_exc())
