@@ -308,11 +308,25 @@ def valoracion_coches():
                 st.error(f"Por favor, complete los siguientes campos: {', '.join(missing_fields)}")
             else:
                 try:
-                    # Preparar datos para modelo de precio - CON VALIDACIONES
+                    # Cargar modelo de precio
+                    price_model = load_price_model()
+
+                    # Recuperar los pasos del pipeline
+                    preprocessor = price_model.named_steps.get('preprocessor')
+                    make_encoder = preprocessor.named_transformers_['cat'].named_steps.get('make_encoder')
+                    model_encoder = preprocessor.named_transformers_['cat'].named_steps.get('model_encoder')
+                    fuel_encoder = preprocessor.named_transformers_['cat'].named_steps.get('fuel_encoder')
+
+                    # Codificar marca, modelo y combustible
+                    make_encoded = make_encoder.transform([car_characteristics['make']])[0]
+                    model_encoded = model_encoder.transform([car_characteristics['model']])[0]
+                    fuel_encoded = fuel_encoder.transform([car_characteristics['fuel']])[0]
+
+                    # Preparar datos para modelo de precio
                     price_input_data = pd.DataFrame({
-                        'make': [str(car_characteristics['make']).strip() or 'Unknown'],
-                        'model': [str(car_characteristics['model']).strip() or 'Unknown'],
-                        'fuel': [str(car_characteristics['fuel']).strip() or 'Unknown'],
+                        'make': [make_encoded],
+                        'model': [model_encoded],
+                        'fuel': [fuel_encoded],
                         'year': [int(car_characteristics['year'])],
                         'kms': [float(car_characteristics['kms'])],
                         'power': [float(car_characteristics['power'])],
@@ -320,9 +334,6 @@ def valoracion_coches():
                         'shift_manual': [1 if car_characteristics['shift'] == 'Manual' else 0]
                     })
 
-                    # Cargar modelo de precio
-                    price_model = load_price_model()
-                    
                     # Predecir precio
                     predicted_price = price_model.predict(price_input_data)[0]
                     
@@ -342,6 +353,9 @@ def valoracion_coches():
                 except Exception as e:
                     st.error(f"Error al valorar el coche: {str(e)}")
                     st.error("Por favor, verifique que todos los campos estén correctamente completados.")
+                    # Imprimir el error completo para depuración
+                    import traceback
+                    st.error(traceback.format_exc())
             
 # Función principal para configurar la navegación
 def main():
